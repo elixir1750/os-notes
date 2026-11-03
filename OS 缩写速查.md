@@ -2,9 +2,9 @@
 tags: [操作系统, 速查]
 ---
 
-# 缩写速查（第 3–4 课）
+# 缩写速查（第 3–6 课）
 
-> [!tip] 先别慌：真正要记的只有 12 个
+> [!tip] 先别慌：第 3–4 课真正要记的只有 12 个；第 5–6 课的新缩写在文末单独一节
 > 下面分三档。**第一档必须记**，考试和理解主线都靠它；**第二档认识就行**，看到能查到意思即可；**第三档是指令**，读代码时对照着看。
 > 读不懂一行代码时，先只问自己：**这一行在读/写哪个寄存器？这个寄存器属于哪一档？** 第二、三档的东西，知道它"在设置某个开关"就够了。
 
@@ -126,3 +126,55 @@ tags: [操作系统, 速查]
 
 > [!tip] 寄存器名也有规律
 > `x0`–`x30` 是通用寄存器（64 位），`w0`–`w30` 是它们的低 32 位。x29 = 帧指针（FP），x30 = 返回地址（LR）。
+
+---
+
+## 第 5–6 课：内存管理新出现的缩写
+
+> [!tip] 先抓这 6 个
+> **VMA、TLB、ASID、COW、LRU、FIFO**。其余的认识就行。第一档里的 MMU、TTBR、VA/PA 这两课还在用，意思不变。
+
+### 必须记
+
+| 缩写 | 全称 | 人话 | 在哪出现 |
+|---|---|---|---|
+| **VMA** | Virtual Memory Area | **虚拟内存区域**：操作系统登记"这段地址允许用、权限是什么"的记录。Linux 里叫 `vm_area_struct` | 第 5 课第 39–47 页；第 6 课 |
+| **TLB** | Translation Lookaside Buffer | **地址翻译的缓存**：记着最近翻译过的"虚拟页 → 物理页" | 第 5 课第 30–35 页 |
+| **ASID** | Address Space ID | **进程编号**，打在 TLB 条目上，切换进程不用清 TLB | 第 5 课第 33 页 |
+| **COW** | Copy-On-Write | **写时拷贝**：先共享只读，谁要写再复制那一页 | 第 5 课第 63 页 |
+| **FIFO** | First In, First Out | **先进先出**：换出最早进来的页 | 第 6 课第 43 页 |
+| **LRU** | Least Recently Used | **最近最少使用**：换出最久没被访问的页 | 第 6 课第 46 页 |
+
+### 认识就行
+
+| 缩写 | 全称 | 人话 | 在哪出现 |
+|---|---|---|---|
+| PMP / sPMP | (supervisor-mode) Physical Memory Protection | RISC-V 的物理内存保护：用寄存器写明哪段物理地址能读写执行 | 第 5 课第 8–9 页 |
+| ARM64 / AArch64 | ARM Architecture 64-bit | 64 位 ARM 架构（手机、树莓派） | 全程 |
+| CR3 | Control Register 3 | x86-64 的页表基地址寄存器（相当于 ARM 的 TTBR） | 第 5 课第 23 页 |
+| CR2 | Control Register 2 | x86-64 存缺页地址的寄存器（相当于 ARM 的 FAR_EL1） | 第 5 课第 50 页 |
+| TCR_EL1 | Translation Control Register | 设定页大小（4K/16K/64K）、ASID 位数等 | 第 5 课第 33、71 页 |
+| TLBI | TLB Invalidate | 清 TLB 的指令。`VMALLE1IS` 全清、`ASIDE1IS` 按 ASID 清、`VAE1IS` 按地址清 | 第 5 课第 32 页 |
+| IS | Inner Shareable | 指令结尾的 IS = 对同组的所有核都生效 | 第 5 课第 32、35 页 |
+| IPI | Inter-Processor Interrupt | 核间中断：一个核通知另一个核干活（比如清 TLB） | 第 5 课第 35 页 |
+| XN / UXN | (User) eXecute Never | 页表项第 54 位：用户态不准执行 | 第 5 课第 25 页 |
+| PXN | Privileged eXecute Never | 页表项第 53 位：内核态不准执行 | 第 5 课第 25 页 |
+| DBM | Dirty Bit Modifier | 页表项第 51 位：这页被写过（脏） | 第 5 课第 25 页 |
+| PTE | Page Table Entry | 页表项（课件写中文"页表项"） | 两课全程 |
+| ELF | Executable and Linkable Format | Linux 可执行文件格式，VMA 的代码段、数据段按它建 | 第 5 课第 40 页 |
+| fd | file descriptor | 文件描述符：打开文件后得到的编号 | 第 5 课第 42 页 |
+| POSIX | Portable Operating System Interface | 类 Unix 系统的接口标准 | 第 5 课第 42 页 |
+| SIGSEGV | Segmentation Violation signal | "段错误"信号，访问非法地址时发给进程 | 第 5 课第 84 页；第 6 课 |
+| JIT | Just-In-Time compilation | 即时编译：运行时生成机器码 | 第 5 课第 60 页 |
+| KSM | Kernel Same-page Merging | Linux 内存去重：内容一样的页合成一份 | 第 5 课第 64 页 |
+| THP | Transparent Huge Pages | 透明大页：内核自动换成 2MB 大页 | 第 5 课第 70 页 |
+| ZRAM / ESWAP | (compressed) RAM / Enhanced SWAP | 鸿蒙 HyperHold 用的内存压缩区 / 增强交换 | 第 5 课第 73 页 |
+| SFI | Software Fault Isolation | 软件故障隔离：编译时插检查代码代替 MMU 隔离 | 第 5 课第 72 页 |
+| KV Cache | Key-Value Cache | 大模型推理时存的中间结果，vLLM 用分页管理它 | 第 5 课第 74–76 页 |
+| DMA | Direct Memory Access | 外设直接读写内存，不经过 CPU，需要物理连续的缓冲区 | 第 6 课第 4 页 |
+| kmalloc | kernel malloc | 内核里的 malloc，底下用 SLUB | 第 6 课第 4 页 |
+| SLAB / SLUB / SLOB | （名字，不是严格缩写；SLOB = Simple List Of Blocks） | 小对象分配器家族。课上讲 SLUB | 第 6 课第 19–31 页 |
+| OPT | Optimal | 理想替换策略：换出未来最久不用的页（做不到，当标准答案） | 第 6 课第 42 页 |
+| MRU | Most Recently Used | 换出最近刚用过的页 | 第 6 课第 49 页 |
+| XOR | exclusive or | 异或。伙伴地址 = 自己地址 XOR 块大小 | 第 6 课第 11 页 |
+
